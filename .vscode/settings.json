@@ -1,0 +1,7 @@
+{
+    "objectscript.conn": {
+        "server": "ws~iris",
+        "ns": "WSTEST",
+        "active": true
+    }
+}
