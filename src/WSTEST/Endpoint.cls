@@ -25,18 +25,20 @@ ClassMethod OnHandleCorsRequest(url As %String) As %Status
 	do %response.SetHeader("Access-Control-Allow-Headers","Access-Control-Allow-Origin, Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control")
 	quit $$$OK
 }
-
+// Class method to retrieve the data of a person filtered by PersonId
 ClassMethod TestGet(pid As %Integer) As %Status
 {
     Try {
         Do ##class(%REST.Impl).%SetContentType("application/json")
         If '##class(%REST.Impl).%CheckAccepts("application/json") Do ##class(%REST.Impl).%ReportRESTError(..#HTTP406NOTACCEPTABLE,$$$ERROR($$$RESTBadAccepts)) Quit
         
-        
+        // Creation of BS instance
         set status = ##class(Ens.Director).CreateBusinessService("WSTEST.BS.PersonSearchBS", .instance)
 
+        // Invocation of BS with pid parameter
         set status = instance.OnProcessInput(pid, .response)
        	if $ISOBJECT(response) {
+            // Sending person data to client in JSON format
         	Do ##class(%REST.Impl).%WriteResponse(response.%JSONExport())
 		}
         
@@ -47,21 +49,25 @@ ClassMethod TestGet(pid As %Integer) As %Status
     }
     Quit $$$OK
 }
-
+// Class method to receive person data to persist in our database
 ClassMethod TestPost() As %Status
 {
     Try {
         Do ##class(%REST.Impl).%SetContentType("application/json")
         If '##class(%REST.Impl).%CheckAccepts("application/json") Do ##class(%REST.Impl).%ReportRESTError(..#HTTP406NOTACCEPTABLE,$$$ERROR($$$RESTBadAccepts)) Quit
         
+        // Reading the body of the http call with the person data
         set bodyJson = %request.Content.Read()
         
-        
+        // Creation of BS instance
         set status = ##class(Ens.Director).CreateBusinessService("WSTEST.BS.PersonSaveBS", .instance)
        	#dim response as %DynamicObject
+
+        // Invocation of BS with person data
         set status = instance.OnProcessInput(bodyJson, .response)
         
         if $ISOBJECT(response) {
+            // Returning to the client the person object in JSON format after save it
             Do ##class(%REST.Impl).%WriteResponse(response.%JSONExport())
 	    }
         

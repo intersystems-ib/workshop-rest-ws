@@ -1,5 +1,5 @@
 # workshop-rest-ws
-Example about an IRIS production connected by JDBC to a MySQL database throught JGW
+Example about a REST web service defined in IRIS and working with a production.
 
 You can find more in-depth information in https://learning.intersystems.com.
 
